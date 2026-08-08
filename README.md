@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev)
-[![FFmpeg](https://img.shields.io/badge/FFmpeg-required-orange.svg)](https://ffmpeg.org)
+[![Electron](https://img.shields.io/badge/Electron-31-blue.svg)](https://electronjs.org)
 
 ---
 
@@ -22,35 +22,23 @@ All processing runs **100% locally**. No cloud, no API keys required.
 
 ---
 
-## Prerequisites
+## Installation
 
-| Requirement | Version | Download |
-|-------------|---------|----------|
-| Python | 3.11+ | [python.org](https://python.org) |
-| Node.js | 18+ | [nodejs.org](https://nodejs.org) |
-| FFmpeg | Auto-downloads | [ffmpeg.org](https://ffmpeg.org/download.html) |
+ShapCut is distributed as a single packaged executable for Windows, Mac, and Linux.
 
-*Note: On Windows, ShapCut will automatically download FFmpeg on first run if it isn't found on your PATH.*
+1. Navigate to the [Releases](https://github.com/ransamie/ShapCut/releases) tab.
+2. Download the installer for your platform (`.exe`, `.dmg`, or `.AppImage`).
+3. Run the installer.
+
+*Note: On your very first launch, ShapCut will automatically securely download the required open-source FFmpeg binaries directly into your local AppData folder. An active internet connection is required only for this initial setup.*
 
 ---
 
-## Quick Start
+## Development Setup
 
-### Windows (one command)
-```batch
-start.bat
-```
+If you want to contribute to the code or run it manually:
 
-This script will:
-- Create a Python virtual environment
-- Install all backend dependencies
-- Install npm packages
-- Start both services
-- Open the app in your browser
-
-### Manual Start
-
-**Backend:**
+### 1. Start the Python Backend
 ```bash
 cd backend
 python -m venv venv
@@ -58,50 +46,47 @@ venv\Scripts\activate        # Windows
 # source venv/bin/activate   # macOS/Linux
 pip install -r requirements.txt
 python main.py
-# API available at http://127.0.0.1:8000
 ```
+*(The backend runs on `http://127.0.0.1:8000`)*
 
-**Frontend:**
+### 2. Start the Electron/React Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
-# App available at http://localhost:5173
 ```
+*(This will launch the native Electron wrapper connected to the Vite dev server)*
+
+---
+
+## CI/CD and Building
+This project is configured with GitHub Actions to automatically cross-compile for all operating systems. 
+
+When code is pushed to `master`, GitHub's cloud runners will:
+1. Build the Python backend into a native executable via `PyInstaller`.
+2. Build the React frontend.
+3. Bundle everything into an installer using `electron-builder`.
+
+To trigger a manual build, go to the **Actions** tab on GitHub.
 
 ---
 
 ## Usage Guide
 
 ### 1. Upload Video
-- Open `http://localhost:5173/editor`
 - Drag & drop or click to upload your video (MP4, MOV, AVI, MKV, WebM)
 
 ### 2. Transcribe
 - Select Whisper model size (Base is recommended for speed/accuracy balance)
 - Click **Auto-Process All** to run the full pipeline, or step through manually
 
-| Model | Speed | Accuracy |
-|-------|-------|----------|
-| tiny | ⚡⚡⚡ | ★★ |
-| base | ⚡⚡ | ★★★ |
-| small | ⚡ | ★★★★ |
-| medium | 🐌 | ★★★★★ |
-| large-v3 | 🐌🐌 | ★★★★★ |
-
 ### 3. Correct Captions
 - Automatically removes Whisper hallucinations and fixes grammar
 - Edit any segment inline by clicking the ✏️ icon in the transcript
 
 ### 4. Analyse
-- AI scores each segment from 0-100 based on:
-  - **Information density** — numbers, named entities, technical terms
-  - **Sentiment intensity** — emotional peaks (positive or negative)
-  - **Speech pace** — words per second (sweet spot: 2-4 wps)
-  - **Hook keywords** — questions, superlatives, statistics, call-outs
-  - **Lexical diversity** — vocabulary richness
+- AI scores each segment from 0-100 based on Information density, Sentiment, Pace, and Hook keywords.
 - Segments above the threshold are auto-marked (green ✓)
-- Adjust threshold in **Settings**
 
 ### 5. Curate
 - In the transcript, click the ☐ checkbox to toggle any segment's mark
@@ -131,59 +116,19 @@ ShapCut/
 │   │   └── schemas.py          # Pydantic data models
 │   └── requirements.txt
 │
-├── frontend/                   # React + Vite SPA (port 5173)
+├── frontend/                   # Electron + React + Vite SPA
+│   ├── electron/               
+│   │   ├── main.js             # Electron Main Process & Python spawner
+│   │   └── downloader.js       # FFmpeg dynamic dependency fetcher
 │   └── src/
 │       ├── pages/
 │       │   ├── HomePage.jsx    # Landing page
 │       │   └── EditorPage.jsx  # 3-panel editor workspace
-│       ├── components/
-│       │   ├── VideoUploader.jsx
-│       │   ├── TranscriptEditor.jsx
-│       │   ├── Timeline.jsx
-│       │   ├── SegmentCard.jsx
-│       │   ├── ExportPanel.jsx
-│       │   └── ProgressModal.jsx
-│       ├── store/editorStore.js # Zustand global state
-│       └── api/client.js       # REST API client
+│       └── components/         # Modular React components
 │
-├── start.bat                   # Windows one-click launcher
+├── .github/workflows/          # Cross-platform build pipelines
 └── README.md
 ```
-
----
-
-## API Reference
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/upload` | Upload video file |
-| `POST` | `/api/transcribe/{job_id}` | Start transcription |
-| `POST` | `/api/import-subtitles/{job_id}` | Import SRT/VTT |
-| `POST` | `/api/correct/{job_id}` | Correct captions |
-| `POST` | `/api/analyze/{job_id}` | AI segment analysis |
-| `PATCH`| `/api/segments/{job_id}/{seg_id}` | Update segment |
-| `PUT`  | `/api/cuts/{job_id}` | Update cuts list |
-| `POST` | `/api/export/{job_id}` | Export video |
-| `GET`  | `/api/jobs/{job_id}` | Get job state |
-| `GET`  | `/api/jobs/{job_id}/segments` | Get all segments |
-| `GET`  | `/api/jobs/{job_id}/srt` | Download SRT |
-| `GET`  | `/api/jobs/{job_id}/export/{file}` | Download export |
-| `GET`  | `/api/events/{job_id}` | SSE progress stream |
-| `DELETE`| `/api/jobs/{job_id}` | Delete job & files |
-
-Interactive API docs: `http://127.0.0.1:8000/docs`
-
----
-
-## GPU Acceleration
-
-faster-whisper automatically uses CUDA if available. To enable GPU acceleration:
-
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-```
-
-With a modern GPU (RTX 3060+), transcription of a 1-hour video takes ~2-3 minutes with `large-v3`.
 
 ---
 
