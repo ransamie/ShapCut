@@ -1,0 +1,68 @@
+name: Build ShapCut
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Python Dependencies & PyInstaller
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller opencv-python mediapipe numpy
+          
+      - name: Build Python Backend (PyInstaller)
+        working-directory: ./backend
+        run: |
+          pyinstaller --noconfirm --onedir --windowed --name "shapcut_api" "main.py"
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+        
+      - name: Build React Frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      - name: Copy Backend to ExtraResources
+        working-directory: ./frontend
+        shell: bash
+        run: |
+          mkdir -p build/backend
+          cp -r ../backend/dist/shapcut_api/* build/backend/
+          
+      - name: Build Electron App
+        working-directory: ./frontend
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --publish never
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ShapCut-Release-${{ matrix.os }}
+          path: |
+            frontend/dist_electron/*.exe
+            frontend/dist_electron/*.dmg
+            frontend/dist_electron/*.AppImage

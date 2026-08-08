@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      -webkit-app-region: drag; /* allows dragging the borderless window */
+    }
+    img {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+      border-radius: 25px;
+    }
+    #status {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 20px;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .loader {
+      border: 3px solid #1e293b;
+      border-top: 3px solid #06b6d4;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+    .error-icon {
+      color: #ef4444;
+      font-size: 30px;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <img src="./public/logo.png" alt="ShapCut Logo" />
+  <div class="loader" id="loader"></div>
+  <div class="error-icon" id="error">!</div>
+  <div id="status">Initializing...</div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    ipcRenderer.on('download-status', (event, text) => {
+      document.getElementById('status').innerText = text;
+    });
+    ipcRenderer.on('download-error', (event, text) => {
+      document.getElementById('status').innerText = text;
+      document.getElementById('status').style.color = '#ef4444';
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
