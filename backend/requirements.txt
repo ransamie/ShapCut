@@ -7,10 +7,9 @@ pydantic-settings==2.3.4
 
 # Transcription
 faster-whisper==1.0.3
-torch
 
 # NLP / Text Analysis
-language-tool-python==2.8.1
+# language-tool-python is removed to save space, correction.py falls back safely.
 
 # Video Processing
 ffmpeg-python==0.2.0
