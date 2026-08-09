@@ -61,11 +61,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger("shapcut.api")
 
+import tempfile
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-UPLOAD_DIR = Path("uploads")
-EXPORT_DIR = Path("exports")
+_temp_base = Path(tempfile.gettempdir()) / "ShapCutData"
+UPLOAD_DIR = _temp_base / "uploads"
+EXPORT_DIR = _temp_base / "exports"
+
+# Create immediately so StaticFiles mount doesn't fail
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+
 ALLOWED_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v", ".flv"}
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024 * 1024  # 10 GB
 
