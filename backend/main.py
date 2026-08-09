@@ -708,5 +708,23 @@ async def delete_job(job_id: str):
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
+    import sys
+    import multiprocessing
+    
+    # Required for PyInstaller multi-processing support
+    multiprocessing.freeze_support()
+
+    # PyInstaller `--windowed` sets stdout/stderr to None.
+    # Uvicorn tries to call `.isatty()` on them for colored logging and crashes.
+    class DummyStream:
+        def write(self, *args, **kwargs): pass
+        def flush(self, *args, **kwargs): pass
+        def isatty(self): return False
+
+    if sys.stdout is None:
+        sys.stdout = DummyStream()
+    if sys.stderr is None:
+        sys.stderr = DummyStream()
+
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)
