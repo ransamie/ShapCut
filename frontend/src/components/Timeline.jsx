@@ -10,15 +10,52 @@ function formatTime(sec) {
   return `${m}:${s}`
 }
 
+const TimelineTimeDisplay = ({ duration }) => {
+  const currentTime = useEditorStore(state => state.currentTime)
+  return <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+}
+
+const TimelinePlayhead = ({ duration, localScrubTime }) => {
+  const currentTime = useEditorStore(state => state.currentTime)
+  const displayTime = localScrubTime !== null ? localScrubTime : currentTime
+  return (
+    <div 
+      className="timeline-playhead" 
+      style={{ left: `${duration > 0 ? (displayTime / duration) * 100 : 0}%` }}
+    />
+  )
+}
+
+const TimelineAutoScroll = ({ duration, zoomLevel, scrollRef, trackRef, isManuallyScrolling }) => {
+  const currentTime = useEditorStore(state => state.currentTime)
+  
+  useEffect(() => {
+    if (!scrollRef.current || !trackRef.current || zoomLevel === 1 || isManuallyScrolling.current) return
+    const scrollEl = scrollRef.current
+    const trackWidth = trackRef.current.offsetWidth
+    const playheadPct = duration > 0 ? (currentTime / duration) * 100 : 0
+    const playheadPx = (playheadPct / 100) * trackWidth
+    
+    // If playhead is outside the visible scroll window, center it
+    const scrollLeft = scrollEl.scrollLeft
+    const clientWidth = scrollEl.clientWidth
+    
+    if (playheadPx < scrollLeft || playheadPx > scrollLeft + clientWidth) {
+      scrollEl.scrollLeft = playheadPx - clientWidth / 2
+    }
+  }, [currentTime, duration, zoomLevel, scrollRef, trackRef, isManuallyScrolling])
+  
+  return null
+}
+
 export default function Timeline({ videoRef }) {
-  const { segments, cuts, currentTime, duration, setCurrentTime, setIsGlobalScrubbing, updateCutBounds } = useEditorStore(useShallow(state => ({
+  const { segments, cuts, duration, setCurrentTime, setIsGlobalScrubbing, updateCutBounds } = useEditorStore(useShallow(state => ({
     segments: state.segments,
     cuts: state.cuts,
-    currentTime: state.currentTime,
     duration: state.duration,
     setCurrentTime: state.setCurrentTime,
     setIsGlobalScrubbing: state.setIsGlobalScrubbing,
-    updateCutBounds: state.updateCutBounds,
+    updateCutBounds: state.updateCutBounds
   })))
   
   const [zoomLevel, setZoomLevel] = useState(1)
@@ -29,9 +66,8 @@ export default function Timeline({ videoRef }) {
   const [draggingHandle, setDraggingHandle] = useState(null) // { cutIndex, edge: 'start' | 'end' }
   const isDragging = useRef(false)
 
-  // Local scrub state for smooth playhead visuals without blocking the main thread
+  // Local scrub state for smooth playhead visuals
   const [localScrubTime, setLocalScrubTime] = useState(null)
-  const displayTime = localScrubTime !== null ? localScrubTime : currentTime
 
   const syncRef = useRef(null)
   const isManuallyScrolling = useRef(false)
@@ -158,28 +194,10 @@ export default function Timeline({ videoRef }) {
     }
   }, [draggingHandle, duration, updateCutBounds, setCurrentTime, videoRef])
 
-  const playheadPct = duration > 0 ? (currentTime / duration) * 100 : 0
-  
-  // Auto-scroll track to keep playhead in view if playing
-  useEffect(() => {
-    if (!scrollRef.current || !trackRef.current || zoomLevel === 1 || isManuallyScrolling.current) return
-    const scrollEl = scrollRef.current
-    const trackWidth = trackRef.current.offsetWidth
-    const playheadPx = (playheadPct / 100) * trackWidth
-    
-    // If playhead is outside the visible scroll window, center it
-    const scrollLeft = scrollEl.scrollLeft
-    const clientWidth = scrollEl.clientWidth
-    
-    if (playheadPx < scrollLeft || playheadPx > scrollLeft + clientWidth) {
-      scrollEl.scrollLeft = playheadPx - clientWidth / 2
-    }
-  }, [playheadPct, zoomLevel])
-
   return (
     <div className="timeline-outer">
       <div className="timeline-labels">
-        <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+        <TimelineTimeDisplay duration={duration} />
         
         <div className="timeline-zoom-controls">
           <button className="btn-icon" onClick={() => handleZoom(-1)} disabled={zoomLevel <= 1}>
@@ -240,10 +258,7 @@ export default function Timeline({ videoRef }) {
           })}
 
           {/* Playhead */}
-          <div 
-            className="timeline-playhead" 
-            style={{ left: `${(displayTime / duration) * 100}%` }}
-          />
+          <TimelinePlayhead duration={duration} localScrubTime={localScrubTime} />
         </div>
       </div>
 
@@ -267,6 +282,8 @@ export default function Timeline({ videoRef }) {
           </div>
         )}
       </div>
+
+      <TimelineAutoScroll duration={duration} zoomLevel={zoomLevel} scrollRef={scrollRef} trackRef={trackRef} isManuallyScrolling={isManuallyScrolling} />
     </div>
   )
 }

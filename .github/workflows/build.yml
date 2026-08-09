@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
@@ -39,7 +41,7 @@ jobs:
       - name: Build Python Backend (PyInstaller)
         working-directory: ./backend
         run: |
-          pyinstaller --noconfirm --onedir --windowed --name "shapcut_api" "main.py"
+          pyinstaller --noconfirm --onedir --name "shapcut_api" "main.py"
           
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -65,7 +67,7 @@ jobs:
         working-directory: ./frontend
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --publish never
+        run: npx electron-builder --publish always
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

@@ -261,16 +261,17 @@ async def upload_video_from_path(req: UploadPathRequest):
     logger.info(f"Instant load (Zero Copy): {file_path.name} → job {job_id}")
     
     # URL for frontend to stream the video directly from its original drive location
-    video_url = f"/api/stream-local?path={urllib.parse.quote(video_path)}"
+    video_url = f"/api/stream-local/{job_id}"
     return {"job_id": job_id, "filename": file_path.name, "video_url": video_url}
 
 from fastapi import Request
 from fastapi.responses import Response
 
-@app.get("/api/stream-local", tags=["Jobs"])
-async def stream_local(path: str, request: Request):
+@app.get("/api/stream-local/{job_id}", tags=["Jobs"])
+async def stream_local(job_id: str, request: Request):
     """Stream a local file directly from its absolute path with Range support."""
-    file_path = Path(path).resolve()
+    job = _get_job(job_id)
+    file_path = Path(job["video_path"]).resolve()
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found on system")
         

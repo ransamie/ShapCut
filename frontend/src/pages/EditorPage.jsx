@@ -231,8 +231,7 @@ export default function EditorPage() {
     const video = videoRef.current
     if (!video) return
     const onTime = () => {
-      if (useEditorStore.getState().isGlobalScrubbing) return
-      setCurrentTime(video.currentTime)
+      // Auto-pause for cuts
       if (playUntilRef.current !== null && video.currentTime >= playUntilRef.current) {
         video.pause()
         playUntilRef.current = null
@@ -240,7 +239,7 @@ export default function EditorPage() {
     }
     video.addEventListener('timeupdate', onTime)
     return () => video.removeEventListener('timeupdate', onTime)
-  }, [setCurrentTime])
+  }, [])
 
   // Spacebar → play / pause
   useEffect(() => {

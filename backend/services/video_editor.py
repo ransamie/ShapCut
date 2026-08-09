@@ -118,16 +118,12 @@ def _cut_segment(
     use_stream_copy: bool = False,
     crf: int = 23,
     aspect_ratio: str = "horizontal",
+    subtitle_path: Optional[str] = None,
 ) -> None:
     """
     Extract a sub-clip using FFmpeg.
-    Args:
-        use_stream_copy: If True, use lossless stream copy (fast but may have
-                         seek inaccuracy); if False, re-encode for frame accuracy.
-        crf: H.264 CRF quality (lower = better quality, larger file).
-        aspect_ratio: "horizontal" or "vertical"
     """
-    if aspect_ratio in ["vertical", "vertical-ai"]:
+    if aspect_ratio in ["vertical", "vertical-ai"] or subtitle_path:
         use_stream_copy = False
 
     is_ai_tracking = (aspect_ratio == "vertical-ai")
@@ -156,18 +152,27 @@ def _cut_segment(
             "-to", _format_ffmpeg_time(end),
             "-i", video_path,
         ]
-        
+        vf_filters = []
         if aspect_ratio == "vertical": # Static center crop
-            cmd.extend(["-vf", "crop=ih*9/16:ih"])
+            vf_filters.append("crop=ih*9/16:ih")
             
-        cmd.extend([
+        if subtitle_path and not is_ai_tracking:
+            srt_escaped = subtitle_path.replace("\\", "/").replace(":", "\\:")
+            vf_filters.append(f"subtitles='{srt_escaped}'")
+            
+        cmd_encode = [
             "-c:v", "libx264",
             "-crf", str(crf),
             "-preset", "fast",
             "-c:a", "aac",
-            "-b:a", "128k",
-            actual_output_path,
-        ])
+            "-b:a", "128k"
+        ]
+        
+        if vf_filters:
+            cmd.extend(["-vf", ",".join(vf_filters)])
+            
+        cmd.extend(cmd_encode)
+        cmd.append(actual_output_path)
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         if is_ai_tracking and os.path.exists(actual_output_path):
@@ -179,7 +184,7 @@ def _cut_segment(
     if is_ai_tracking:
         try:
             from services.ai_tracking import apply_ai_tracking
-            apply_ai_tracking(actual_output_path, output_path, crf=crf)
+            apply_ai_tracking(actual_output_path, output_path, crf=crf, subtitle_path=subtitle_path)
         finally:
             if os.path.exists(actual_output_path):
                 os.remove(actual_output_path)
@@ -321,13 +326,9 @@ def cut_and_export(
                 video_path, start, end, tmp_path,
                 use_stream_copy=not burn_subtitles and aspect_ratio == "horizontal", 
                 crf=crf,
-                aspect_ratio=aspect_ratio if not burn_subtitles else "horizontal",
+                aspect_ratio=aspect_ratio,
+                subtitle_path=subtitle_path if burn_subtitles else None
             )
-
-            if burn_subtitles and subtitle_path and os.path.exists(subtitle_path):
-                burned_path = os.path.join(tmp_dir, f"burned_{i:04d}.{output_format}")
-                _burn_subtitles(tmp_path, subtitle_path, burned_path, crf=crf, aspect_ratio=aspect_ratio)
-                tmp_path = burned_path
 
             tmp_segments.append(tmp_path)
 

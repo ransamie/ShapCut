@@ -38,6 +38,9 @@ const VideoPlayer = forwardRef(({ src, onLoadedMetadata, className }, ref) => {
     const handlePause = () => setIsPlaying(false)
     const handleTimeUpdate = () => {
       setLocalCurrentTime(video.currentTime)
+      if (!useEditorStore.getState().isGlobalScrubbing) {
+        setCurrentTime(video.currentTime)
+      }
     }
     const handleLoadedMetadata = (e) => {
       setDuration(video.duration)

@@ -5,7 +5,7 @@ from services.video_editor import FFMPEG_CMD
 
 logger = logging.getLogger("shapcut.ai_tracking")
 
-def apply_ai_tracking(input_path: str, output_path: str, crf: int = 23) -> None:
+def apply_ai_tracking(input_path: str, output_path: str, crf: int = 23, subtitle_path: str = None) -> None:
     """
     High-Speed AI Auto-Framing using CV2 and MediaPipe Face Detection.
     1. Fast low-res analysis (3fps) to find face coordinates.
@@ -98,13 +98,20 @@ def apply_ai_tracking(input_path: str, output_path: str, crf: int = 23) -> None:
         "-c:v", "libx264",
         "-preset", "fast",
         "-crf", str(crf),
+    ]
+    
+    if subtitle_path:
+        srt_escaped = subtitle_path.replace("\\", "/").replace(":", "\\:")
+        cmd_out.extend(["-vf", f"subtitles='{srt_escaped}'"])
+
+    cmd_out.extend([
         "-c:a", "aac",
         "-b:a", "128k",
         "-map", "0:v:0",
         "-map", "1:a:0?",
         "-shortest",
         output_path
-    ]
+    ])
     
     proc_out = subprocess.Popen(cmd_out, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
     

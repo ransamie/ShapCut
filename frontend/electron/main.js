@@ -65,7 +65,7 @@ async function startApplication() {
       const backendPath = path.join(process.resourcesPath, 'backend', backendExe);
       
       if (fs.existsSync(backendPath)) {
-        backendProcess = spawn(backendPath, [], { env: process.env });
+        backendProcess = spawn(backendPath, [], { env: process.env, windowsHide: true });
         backendProcess.stdout.on('data', data => console.log(`Backend: ${data}`));
         backendProcess.stderr.on('data', data => console.error(`Backend Error: ${data}`));
       }
