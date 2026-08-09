@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShapCut - AI Video Editor</title>
+    <meta name="description" content="Turn long-form footage into viral shorts using AI-powered caption analysis. Runs 100% locally.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="assets/logo.png" alt="ShapCut Logo">
+                <span>ShapCut</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="https://github.com/ransamie/ShapCut" target="_blank" class="github-link">GitHub</a>
+                <a href="https://github.com/ransamie/ShapCut/releases" class="btn-primary-small">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="badge">Version 1.0 is here</div>
+            <h1 class="animate-up">Turn raw footage into <span class="gradient-text">viral shorts</span> in seconds.</h1>
+            <p class="animate-up delay-1">ShapCut uses local AI to extract captions, score segment impact, and cut your videos automatically. No cloud, no subscriptions.</p>
+            <div class="hero-actions animate-up delay-2">
+                <a href="https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut-Setup.exe" class="btn-primary">Download for Windows</a>
+                <a href="https://github.com/ransamie/ShapCut/releases" class="btn-secondary">Other Platforms</a>
+            </div>
+        </div>
+        <div class="hero-image-container animate-up delay-3">
+            <div class="glow-effect"></div>
+            <img src="assets/hero_mockup.jpg" alt="ShapCut Editor Interface" class="hero-image">
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header reveal">
+            <h2>Powered by Local AI</h2>
+            <p>Everything runs on your machine. Keep your footage private and avoid expensive API costs.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎙️</div>
+                <h3>Whisper Transcription</h3>
+                <p>Lightning-fast, highly accurate captions powered by faster-whisper. Fixes hallucinations and grammar automatically.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">⚡</div>
+                <h3>Impact Scoring</h3>
+                <p>Our multi-factor AI analyzes information density, sentiment, pacing, and keywords to find the most engaging clips.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">✂️</div>
+                <h3>Smart Extraction</h3>
+                <p>Frame-accurate FFmpeg cuts. Export individual viral shorts or merge them into a single highlight reel with burned-in subtitles.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="how-it-works-content reveal">
+            <h2>From hours of video to <span class="gradient-text">curated highlights</span>.</h2>
+            <ul class="steps-list">
+                <li>
+                    <span class="step-number">1</span>
+                    <div class="step-text">
+                        <h4>Upload Video</h4>
+                        <p>Drop your MP4, MOV, or MKV directly into the editor.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-number">2</span>
+                    <div class="step-text">
+                        <h4>AI Analysis</h4>
+                        <p>ShapCut transcribes the audio and scores every sentence for viral potential.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-number">3</span>
+                    <div class="step-text">
+                        <h4>Curate & Export</h4>
+                        <p>Review the AI's selections on the timeline, adjust cuts, and click export.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="how-it-works-visual reveal">
+            <div class="visual-box">
+                <div class="code-snippet">
+                    <div class="code-header">
+                        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    </div>
+                    <pre><code>
+> Transcribing audio (faster-whisper)...
+✓ Transcription complete (4m 12s)
+> Analyzing information density...
+> Scoring pacing and sentiment...
+✓ Found 4 high-impact segments
+> Cutting and rendering video...
+✓ Export complete!
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta reveal">
+        <div class="cta-content">
+            <h2>Ready to speed up your workflow?</h2>
+            <p>Download ShapCut today. It's completely free and open-source.</p>
+            <a href="https://github.com/ransamie/ShapCut/releases" class="btn-primary">Get ShapCut Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="assets/logo.png" alt="ShapCut Logo" class="footer-logo">
+                <span>ShapCut</span>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/ransamie/ShapCut">GitHub Repository</a>
+                <a href="https://github.com/ransamie/ShapCut/issues">Report an Issue</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ShapCut Contributors. MIT Licensed.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
