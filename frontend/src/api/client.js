@@ -3,7 +3,7 @@
  * Thin wrapper over the FastAPI backend endpoints.
  */
 
-const BASE = '/api'
+const BASE = 'http://127.0.0.1:8000/api'
 
 async function request(method, path, body = null, isFormData = false) {
   const opts = {
