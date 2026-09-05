@@ -59,21 +59,18 @@ export default function VideoUploader({ onUploadComplete }) {
         const vUrl = result.video_url;
         const finalUrl = vUrl.startsWith('file://') || vUrl.startsWith('http') ? vUrl : `${baseUrl}${vUrl}`;
         setVideoUrl(finalUrl)
-        addToast('success', `"${file.name}" loaded instantly via path: ${absolutePath}`)
+        addToast('success', `"${file.name}" loaded instantly`)
       } else {
-        // Fallback for standard web browser HTTP upload
-        addToast('error', `Debug: file.path is missing! Are you running in Chrome instead of the Desktop App?`);
-        
-        const url = URL.createObjectURL(file)
-        setVideoUrl(url)
-        
+        // Fallback: standard HTTP upload (no Electron path available)
         const progress = setInterval(() => {
           setUploadPct(p => Math.min(p + 10, 85))
         }, 200)
         result = await uploadVideo(file)
         clearInterval(progress)
         setUploadPct(100)
-        addToast('success', `"${file.name}" uploaded slowly via HTTP`)
+        // video_url from backend is already an absolute http:// URL
+        setVideoUrl(result.video_url)
+        addToast('success', `"${file.name}" uploaded successfully`)
       }
 
       setJob({ ...result, status: 'uploaded' })

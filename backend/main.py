@@ -214,7 +214,7 @@ async def upload_video(file: UploadFile = File(...)):
     }
     event_queues[job_id] = asyncio.Queue(maxsize=100)
     logger.info(f"Uploaded: {file.filename} → job {job_id}")
-    return {"job_id": job_id, "filename": file.filename, "video_url": f"/static_jobs/{job_id}/source{ext}"}
+    return {"job_id": job_id, "filename": file.filename, "video_url": f"http://127.0.0.1:8000/static_jobs/{job_id}/source{ext}"}
 
 
 class UploadPathRequest(BaseModel):
