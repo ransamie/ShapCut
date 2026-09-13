@@ -71,6 +71,11 @@ export async function ensureDependencies(splashWindow) {
         if (fs.existsSync(extractedBin)) {
             fs.copyFileSync(extractedBin, ffmpegPath);
         }
+        const extractedProbe = path.join(binDir, 'ffmpeg-master-latest-win64-gpl', 'bin', 'ffprobe.exe');
+        const probePath = path.join(binDir, 'ffprobe.exe');
+        if (fs.existsSync(extractedProbe)) {
+            fs.copyFileSync(extractedProbe, probePath);
+        }
     } else {
         // Handle mac/linux extraction (simplified for this MVP)
         splashWindow.webContents.send('download-status', 'Manual extraction required on Mac/Linux in this MVP.');

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background-color: #0f172a;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
       color: white;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
@@ -11,58 +14,187 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
       overflow: hidden;
-      -webkit-app-region: drag; /* allows dragging the borderless window */
+      -webkit-app-region: drag;
+      user-select: none;
     }
+
+    .logo-wrap {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
     img {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 20px;
-      border-radius: 25px;
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      display: block;
     }
-    #status {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-top: 20px;
-      text-align: center;
-      padding: 0 20px;
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 32px;
+      color: #f1f5f9;
     }
-    .loader {
-      border: 3px solid #1e293b;
-      border-top: 3px solid #06b6d4;
+
+    /* Step list */
+    .steps {
+      list-style: none;
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: #475569;
+      transition: color 0.3s;
+    }
+
+    .step.active  { color: #e2e8f0; }
+    .step.done    { color: #34d399; }
+    .step.error   { color: #f87171; }
+
+    .step-icon {
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
+      border: 2px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      transition: all 0.3s;
     }
-    .error-icon {
-      color: #ef4444;
-      font-size: 30px;
-      display: none;
+
+    .step.active .step-icon {
+      border-color: #6366f1;
+      background: transparent;
     }
+
+    /* Spinner inside active step icon */
+    .step.active .step-icon::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border: 2px solid #6366f1;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: block;
+    }
+
+    .step.done .step-icon {
+      border-color: #34d399;
+      background: #34d399;
+      color: white;
+    }
+    .step.done .step-icon::after { content: '✓'; animation: none; border: none; font-size: 11px; font-weight: bold; }
+
+    .step.error .step-icon {
+      border-color: #f87171;
+      background: #f87171;
+      color: white;
+    }
+    .step.error .step-icon::after { content: '✕'; animation: none; border: none; font-size: 11px; font-weight: bold; }
+
+    /* Progress bar */
+    .progress-track {
+      width: 280px;
+      height: 3px;
+      background: #1e293b;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #06b6d4);
+      border-radius: 99px;
+      transition: width 0.5s ease;
+    }
+
+    /* Sub-status text (e.g. "Downloading FFmpeg... 42%") */
+    #substatus {
+      font-size: 12px;
+      color: #64748b;
+      height: 16px;
+      text-align: center;
+    }
+
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <img src="./public/logo.png" alt="ShapCut Logo" />
-  <div class="loader" id="loader"></div>
-  <div class="error-icon" id="error">!</div>
-  <div id="status">Initializing...</div>
+  <div class="logo-wrap">
+    <img src="./public/logo.png" alt="ShapCut Logo" />
+  </div>
+  <h1>ShapCut</h1>
+
+  <ul class="steps" id="steps">
+    <li class="step" id="step-ffmpeg">
+      <div class="step-icon"></div>
+      <span>Verifying FFmpeg</span>
+    </li>
+    <li class="step" id="step-backend">
+      <div class="step-icon"></div>
+      <span>Starting AI Engine</span>
+    </li>
+    <li class="step" id="step-ready">
+      <div class="step-icon"></div>
+      <span>Launching Editor</span>
+    </li>
+  </ul>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div id="substatus"></div>
 
   <script>
     const { ipcRenderer } = require('electron');
-    ipcRenderer.on('download-status', (event, text) => {
-      document.getElementById('status').innerText = text;
+
+    function setStep(id, state) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'step ' + state;
+    }
+
+    function setProgress(pct) {
+      document.getElementById('progress-fill').style.width = pct + '%';
+    }
+
+    function setSubStatus(text) {
+      document.getElementById('substatus').textContent = text;
+    }
+
+    // Listen for structured step events from main process
+    ipcRenderer.on('splash-step', (_, { step, state, sub, progress }) => {
+      if (step)     setStep(step, state || 'active');
+      if (sub)      setSubStatus(sub);
+      if (progress !== undefined) setProgress(progress);
     });
-    ipcRenderer.on('download-error', (event, text) => {
-      document.getElementById('status').innerText = text;
-      document.getElementById('status').style.color = '#ef4444';
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('error').style.display = 'block';
+
+    // Legacy text-only events for backwards compatibility
+    ipcRenderer.on('download-status', (_, text) => {
+      setSubStatus(text);
+    });
+
+    ipcRenderer.on('download-error', (_, text) => {
+      setSubStatus(text);
+      setStep('step-ffmpeg', 'error');
     });
   </script>
 </body>

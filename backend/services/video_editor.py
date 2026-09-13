@@ -40,10 +40,21 @@ def _check_ffmpeg() -> None:
     env_ffmpeg = os.environ.get("SHAPCUT_FFMPEG_PATH")
     if env_ffmpeg and Path(env_ffmpeg).exists():
         FFMPEG_CMD = env_ffmpeg
-        # Assume ffprobe is next to it
+        # Look for ffprobe next to ffmpeg
         ffprobe_path = Path(env_ffmpeg).with_name("ffprobe.exe" if sys.platform == "win32" else "ffprobe")
         if ffprobe_path.exists():
             FFPROBE_CMD = str(ffprobe_path)
+        else:
+            # Check parent/subdirectories
+            parent_bin = Path(env_ffmpeg).parent
+            found = list(parent_bin.glob("**/ffprobe*"))
+            if found:
+                FFPROBE_CMD = str(found[0])
+                try:
+                    shutil.copy2(found[0], ffprobe_path)
+                    FFPROBE_CMD = str(ffprobe_path)
+                except Exception:
+                    pass
         return
 
     if shutil.which("ffmpeg") and shutil.which("ffprobe"):
@@ -97,17 +108,38 @@ def _format_ffmpeg_time(seconds: float) -> str:
 
 
 def _get_video_info(video_path: str) -> dict:
-    """Return basic video metadata dict via ffprobe."""
-    cmd = [
-        FFPROBE_CMD, "-v", "quiet",
-        "-print_format", "json",
-        "-show_streams", "-show_format",
-        video_path,
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"ffprobe failed: {result.stderr}")
-    return json.loads(result.stdout)
+    """Return basic video metadata dict via ffprobe with OpenCV fallback."""
+    _check_ffmpeg()
+    try:
+        cmd = [
+            FFPROBE_CMD, "-v", "quiet",
+            "-print_format", "json",
+            "-show_streams", "-show_format",
+            video_path,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            return json.loads(result.stdout)
+    except Exception as e:
+        logger.warning(f"ffprobe failed ({e}), falling back to OpenCV")
+
+    # Fallback to OpenCV
+    try:
+        import cv2
+        cap = cv2.VideoCapture(video_path)
+        fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+        frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0
+        duration = frame_count / fps if fps > 0 else 0.0
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
+        cap.release()
+        return {
+            "format": {"duration": str(duration)},
+            "streams": [{"width": width, "height": height, "codec_type": "video"}]
+        }
+    except Exception as e:
+        logger.warning(f"OpenCV fallback also failed ({e})")
+        return {"format": {"duration": "0.0"}, "streams": []}
 
 
 def _cut_segment(
