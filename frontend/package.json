@@ -61,7 +61,8 @@
       "icon": "public/logo.png",
       "target": [
         "nsis"
-      ]
+      ],
+      "signExecutable": false
     },
     "linux": {
       "icon": "public/logo.png",

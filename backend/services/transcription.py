@@ -191,7 +191,8 @@ def transcribe_video(
     if not os.path.exists(video_path):
         raise FileNotFoundError(f"Video not found: {video_path}")
 
-    tmp = temp_dir or os.path.join(os.path.dirname(video_path), ".shapcut_tmp")
+    import tempfile
+    tmp = temp_dir or os.path.join(tempfile.gettempdir(), "ShapCutData", "tmp")
     os.makedirs(tmp, exist_ok=True)
     audio_path = os.path.join(tmp, f"{uuid.uuid4().hex}.wav")
 
@@ -248,17 +249,35 @@ def transcribe_video(
             _MODEL_CACHE[model_size] = model
         _emit(MODEL_END, "Transcribing…")
 
-        # ── Phase 3: transcribe with per-segment progress ─────────────────
-        whisper_segments, info = model.transcribe(
-            audio_path,
-            language=language,
-            word_timestamps=word_timestamps,
-            vad_filter=True,
-            vad_parameters={"min_silence_duration_ms": 500},
-        )
+        # ── Phase 3: transcribe with VAD fallback & per-segment progress ──
+        def _transcribe_stream(use_vad: bool):
+            return model.transcribe(
+                audio_path,
+                language=language,
+                word_timestamps=word_timestamps,
+                vad_filter=use_vad,
+                vad_parameters={"min_silence_duration_ms": 500} if use_vad else None,
+            )
+
+        try:
+            whisper_segments, info = _transcribe_stream(use_vad=True)
+            # Evaluate the first segment to verify VAD ONNX model initializes correctly
+            seg_iter = iter(whisper_segments)
+            first_item = next(seg_iter, None)
+            # Reconstruct generator stream
+            def _chained_stream():
+                if first_item is not None:
+                    yield first_item
+                for item in seg_iter:
+                    yield item
+            active_stream = _chained_stream()
+        except Exception as vad_err:
+            logger.warning(f"VAD model failed ({vad_err}); falling back to standard transcription without VAD.")
+            whisper_segments, info = _transcribe_stream(use_vad=False)
+            active_stream = whisper_segments
 
         segments: list[TranscriptSegment] = []
-        for idx, seg in enumerate(whisper_segments):
+        for idx, seg in enumerate(active_stream):
             if duration > 0:
                 seg_frac = min(seg.end / duration, 1.0)
                 overall = MODEL_END + seg_frac * (TRANSCRIBE_END - MODEL_END)

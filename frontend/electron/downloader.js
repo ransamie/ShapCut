@@ -5,7 +5,7 @@ import extract from 'extract-zip';
 import { app } from 'electron';
 
 const FFMPEG_URLS = {
-  win32: 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip',
+  win32: 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip',
   // In a full production app, you'd provide Mac/Linux URLs too
   darwin: 'https://evermeet.cx/ffmpeg/ffmpeg-6.0.zip',
   linux: 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'

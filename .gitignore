@@ -17,6 +17,8 @@ build/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/dist_electron/
+dist_electron/
 
 # Media
 *.mp4

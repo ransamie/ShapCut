@@ -37,15 +37,24 @@ def _check_ffmpeg() -> None:
     """Check if ffmpeg is available on PATH, otherwise download it."""
     global FFMPEG_CMD, FFPROBE_CMD
     
+    # 1. Check directory of running python executable (packaged backend)
+    exe_dir = Path(sys.executable).parent
+    exe_ffmpeg = exe_dir / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+    exe_ffprobe = exe_dir / ("ffprobe.exe" if sys.platform == "win32" else "ffprobe")
+    if exe_ffmpeg.exists():
+        FFMPEG_CMD = str(exe_ffmpeg)
+        if exe_ffprobe.exists():
+            FFPROBE_CMD = str(exe_ffprobe)
+        return
+
+    # 2. Check SHAPCUT_FFMPEG_PATH from Electron
     env_ffmpeg = os.environ.get("SHAPCUT_FFMPEG_PATH")
     if env_ffmpeg and Path(env_ffmpeg).exists():
         FFMPEG_CMD = env_ffmpeg
-        # Look for ffprobe next to ffmpeg
         ffprobe_path = Path(env_ffmpeg).with_name("ffprobe.exe" if sys.platform == "win32" else "ffprobe")
         if ffprobe_path.exists():
             FFPROBE_CMD = str(ffprobe_path)
         else:
-            # Check parent/subdirectories
             parent_bin = Path(env_ffmpeg).parent
             found = list(parent_bin.glob("**/ffprobe*"))
             if found:
@@ -57,6 +66,20 @@ def _check_ffmpeg() -> None:
                     pass
         return
 
+    # 3. Check AppData/ShapCut/bin (Windows standard install location)
+    if sys.platform == "win32":
+        appdata = os.environ.get("APPDATA", "")
+        if appdata:
+            appdata_bin = Path(appdata) / "ShapCut" / "bin"
+            app_ffmpeg = appdata_bin / "ffmpeg.exe"
+            app_ffprobe = appdata_bin / "ffprobe.exe"
+            if app_ffmpeg.exists():
+                FFMPEG_CMD = str(app_ffmpeg)
+                if app_ffprobe.exists():
+                    FFPROBE_CMD = str(app_ffprobe)
+                return
+
+    # 4. Check system PATH
     if shutil.which("ffmpeg") and shutil.which("ffprobe"):
         return
 
@@ -75,10 +98,10 @@ def _check_ffmpeg() -> None:
             "Please install it via your package manager (e.g. apt install ffmpeg or brew install ffmpeg)"
         )
 
-    logger.info("FFmpeg not found on PATH. Downloading FFmpeg (this may take a minute)...")
+    logger.info("FFmpeg not found on PATH. Downloading commercial-safe LGPL FFmpeg...")
     bin_dir.mkdir(exist_ok=True)
     zip_path = bin_dir / "ffmpeg.zip"
-    url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+    url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip"
     
     urllib.request.urlretrieve(url, zip_path)
     
@@ -96,7 +119,7 @@ def _check_ffmpeg() -> None:
     
     FFMPEG_CMD = str(ffmpeg_exe)
     FFPROBE_CMD = str(ffprobe_exe)
-    logger.info("FFmpeg downloaded successfully.")
+    logger.info("LGPL FFmpeg downloaded successfully.")
 
 
 def _format_ffmpeg_time(seconds: float) -> str:

@@ -98,12 +98,27 @@ async function startApplication() {
     // Step 2 — Backend
     step('step-backend', 'active', 'Launching AI engine...', 40)
 
+    // Augment PATH with local bin directory
+    const binDir = path.join(app.getPath('userData'), 'bin')
+    process.env.PATH = `${binDir}${path.delimiter}${process.env.PATH}`
+
+    // Setup persistent logging
+    const { default: os } = await import('os')
+    const logDir = path.join(os.tmpdir(), 'ShapCutData')
+    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true })
+    const logStream = fs.createWriteStream(path.join(logDir, 'backend.log'), { flags: 'a' })
+    const logMsg = (msg) => {
+      const line = `[${new Date().toISOString()}] ${msg}\n`
+      logStream.write(line)
+      console.log(msg)
+    }
+
     if (app.isPackaged) {
       const { spawn } = await import('child_process')
       const backendExe = process.platform === 'win32' ? 'shapcut_api.exe' : 'shapcut_api'
       const backendPath = path.join(process.resourcesPath, 'backend', backendExe)
 
-      console.log(`[Electron] Looking for backend at: ${backendPath}`)
+      logMsg(`[Electron] Looking for backend at: ${backendPath}`)
 
       if (fs.existsSync(backendPath)) {
         backendProcess = spawn(backendPath, [], {
@@ -111,17 +126,17 @@ async function startApplication() {
           windowsHide: true,
         })
 
-        backendProcess.stdout.on('data', data => console.log(`[Backend] ${data}`))
-        backendProcess.stderr.on('data', data => console.error(`[Backend ERR] ${data}`))
+        backendProcess.stdout.on('data', data => logMsg(`[Backend] ${data}`))
+        backendProcess.stderr.on('data', data => logMsg(`[Backend ERR] ${data}`))
         backendProcess.on('exit', (code, signal) => {
-          console.error(`[Backend] Process exited with code=${code} signal=${signal}`)
+          logMsg(`[Backend] Process exited with code=${code} signal=${signal}`)
         })
         backendProcess.on('error', (err) => {
-          console.error(`[Backend] Failed to spawn: ${err.message}`)
+          logMsg(`[Backend] Failed to spawn: ${err.message}`)
           step('step-backend', 'error', `Failed to start: ${err.message}`, 40)
         })
       } else {
-        console.error(`[Electron] Backend NOT FOUND at: ${backendPath}`)
+        logMsg(`[Electron] Backend executable NOT FOUND at: ${backendPath}`)
         step('step-backend', 'error', 'Backend executable not found', 40)
       }
     }
@@ -154,6 +169,20 @@ async function startApplication() {
   }
 }
 
+function cleanExit() {
+  if (backendProcess && backendProcess.pid) {
+    try {
+      if (process.platform === 'win32') {
+        const { execSync } = require('child_process')
+        execSync(`taskkill /pid ${backendProcess.pid} /T /F`, { stdio: 'ignore' })
+      } else {
+        backendProcess.kill('SIGTERM')
+      }
+    } catch (e) {}
+    backendProcess = null
+  }
+}
+
 app.whenReady().then(() => {
   startApplication()
 
@@ -163,8 +192,9 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', function () {
-  if (backendProcess) {
-    backendProcess.kill()
-  }
+  cleanExit()
   if (process.platform !== 'darwin') app.quit()
 })
+
+app.on('before-quit', cleanExit)
+app.on('will-quit', cleanExit)
