@@ -265,17 +265,67 @@ async def upload_video_from_path(req: UploadPathRequest):
     return {"job_id": job_id, "filename": file_path.name, "video_url": video_url}
 
 from fastapi import Request
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 
 @app.get("/api/stream-local/{job_id}", tags=["Jobs"])
 async def stream_local(job_id: str, request: Request):
-    """Stream a local file directly from its absolute path with Range support."""
+    """Stream a local file directly with full HTTP 206 Range support for video seeking."""
     job = _get_job(job_id)
     file_path = Path(job["video_path"]).resolve()
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found on system")
         
-    return FileResponse(file_path, media_type="video/mp4")
+    file_size = file_path.stat().st_size
+    range_header = request.headers.get("range")
+    
+    content_type = "video/mp4"
+    ext = file_path.suffix.lower()
+    if ext in [".mov", ".qt"]:
+        content_type = "video/quicktime"
+    elif ext in [".webm"]:
+        content_type = "video/webm"
+    elif ext in [".mkv"]:
+        content_type = "video/x-matroska"
+
+    if range_header:
+        try:
+            byte_range = range_header.strip().split("=")[1]
+            parts = byte_range.split("-")
+            start = int(parts[0]) if parts[0] else 0
+            end = int(parts[1]) if len(parts) > 1 and parts[1] else file_size - 1
+            if end >= file_size:
+                end = file_size - 1
+            length = end - start + 1
+            
+            def iter_file():
+                with open(file_path, "rb") as f:
+                    f.seek(start)
+                    remaining = length
+                    chunk_size = 1024 * 1024  # 1MB chunks
+                    while remaining > 0:
+                        read_bytes = min(chunk_size, remaining)
+                        data = f.read(read_bytes)
+                        if not data:
+                            break
+                        remaining -= len(data)
+                        yield data
+
+            headers = {
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Accept-Ranges": "bytes",
+                "Content-Length": str(length),
+                "Content-Type": content_type,
+            }
+            return StreamingResponse(iter_file(), status_code=206, headers=headers)
+        except Exception as e:
+            logger.warning(f"Error parsing range header {range_header}: {e}")
+
+    headers = {
+        "Accept-Ranges": "bytes",
+        "Content-Length": str(file_size),
+        "Content-Type": content_type,
+    }
+    return FileResponse(file_path, media_type=content_type, headers=headers)
 
 
 # ---------------------------------------------------------------------------

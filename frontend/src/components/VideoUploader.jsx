@@ -56,9 +56,8 @@ export default function VideoUploader({ onUploadComplete }) {
 
       if (absolutePath) {
         result = await uploadVideoFromPath(absolutePath)
-        const vUrl = result.video_url;
-        const finalUrl = vUrl.startsWith('file://') || vUrl.startsWith('http') ? vUrl : `${baseUrl}${vUrl}`;
-        setVideoUrl(finalUrl)
+        const fileUrl = 'file:///' + absolutePath.replace(/\\/g, '/');
+        setVideoUrl(fileUrl)
         addToast('success', `"${file.name}" loaded instantly`)
       } else {
         // Fallback: standard HTTP upload (no Electron path available)
@@ -94,11 +93,8 @@ export default function VideoUploader({ onUploadComplete }) {
     setStatus('uploading')
     try {
       const result = await uploadVideoFromPath(pathInput.trim())
-      
-      const baseUrl = import.meta.env?.VITE_API_URL || 'http://localhost:8000'
-      const vUrl = result.video_url;
-      const finalUrl = vUrl.startsWith('file://') || vUrl.startsWith('http') ? vUrl : `${baseUrl}${vUrl}`;
-      setVideoUrl(finalUrl)
+      const fileUrl = 'file:///' + pathInput.trim().replace(/\\/g, '/');
+      setVideoUrl(fileUrl)
       
       setJob({ ...result, status: 'uploaded' })
       addToast('success', `"${result.filename}" loaded instantly`)
