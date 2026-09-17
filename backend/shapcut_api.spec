@@ -37,14 +37,12 @@ try:
 except Exception as e:
     print(f"Warning finding silero_vad: {e}")
 
-# Bundle FFmpeg and FFprobe directly if available
-appdata = os.environ.get("APPDATA", "")
-if appdata:
-    bin_dir = Path(appdata) / "ShapCut" / "bin"
-    if (bin_dir / "ffmpeg.exe").exists():
-        datas.append((str(bin_dir / "ffmpeg.exe"), "."))
-    if (bin_dir / "ffprobe.exe").exists():
-        datas.append((str(bin_dir / "ffprobe.exe"), "."))
+# Bundle FFmpeg and FFprobe directly if available in backend/bin or APPDATA
+for search_dir in [Path(SPECPATH) / "bin", Path(os.environ.get("APPDATA", "")) / "ShapCut" / "bin"]:
+    for bin_name in ["ffmpeg.exe", "ffmpeg", "ffprobe.exe", "ffprobe"]:
+        candidate = search_dir / bin_name
+        if candidate.exists():
+            datas.append((str(candidate), "."))
 
 a = Analysis(
     [os.path.join(SPECPATH, 'main.py')],

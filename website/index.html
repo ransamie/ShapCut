@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShapCut - AI Video Editor</title>
+    <title>ShapCut - Free, 100% Local AI Video Editor & Viral Shorts Clipper</title>
     <link rel="icon" href="assets/logo.png" type="image/png">
-    <meta name="description" content="Turn long-form footage into viral shorts using AI-powered caption analysis. Runs 100% locally.">
+    <meta name="description" content="Stop paying $30/month for cloud AI clippers. ShapCut turns long footage into viral shorts locally using Whisper AI and smart impact scoring. Free & open-source.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -21,9 +21,12 @@
             </div>
             <div class="nav-links">
                 <a href="#features">Features</a>
-                <a href="#how-it-works">How it Works</a>
+                <a href="#comparison">Why Local AI?</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#downloads">Downloads</a>
+                <a href="#faq">FAQ</a>
                 <a href="https://github.com/ransamie/ShapCut" target="_blank" class="github-link">GitHub</a>
-                <a href="https://github.com/ransamie/ShapCut/releases" class="btn-primary-small">Download</a>
+                <a href="#downloads" class="btn-primary-small">Get Free</a>
             </div>
         </div>
     </nav>
@@ -31,69 +34,174 @@
     <!-- Hero Section -->
     <header class="hero">
         <div class="hero-content">
-            <div class="badge">Version 1.0 is here</div>
-            <h1 class="animate-up">Turn raw footage into <span class="gradient-text">viral shorts</span> in seconds.</h1>
-            <p class="animate-up delay-1">ShapCut uses local AI to extract captions, score segment impact, and cut your videos automatically. No cloud, no subscriptions.</p>
-            <div class="hero-actions animate-up delay-2">
-                <a href="https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut-Setup.exe" class="btn-primary">Download for Windows</a>
-                <a href="https://github.com/ransamie/ShapCut/releases" class="btn-secondary">Other Platforms</a>
+            <div class="badge animate-up">
+                <span class="pulse-dot"></span>
+                <span>v1.0.0 Released • 100% Free & Open Source</span>
+            </div>
+            <h1 class="animate-up delay-1">
+                Stop paying $30/mo for AI clippers.<br>
+                Cut <span class="gradient-text">viral shorts</span> 100% locally.
+            </h1>
+            <p class="animate-up delay-2">
+                ShapCut transcribes, scores viral hooks, and cuts frame-accurate clips directly on your hardware. No cloud queues. No minute caps. Zero monthly subscriptions.
+            </p>
+            <div class="hero-actions animate-up delay-3">
+                <a id="primary-download-btn" href="https://github.com/ransamie/ShapCut/releases/latest" class="btn-primary">
+                    Download for Windows (.exe)
+                </a>
+                <a href="#downloads" class="btn-secondary">
+                    All Platforms (macOS & Linux)
+                </a>
+            </div>
+            <div class="hero-subtext animate-up delay-3">
+                <span>🔒 100% Private (Zero Uploads)</span>
+                <span>⚡ Instant Local Processing</span>
+                <span>🚫 No Credit Card Required</span>
+                <span>✨ MIT/LGPL Licensed</span>
             </div>
         </div>
+
         <div class="hero-image-container animate-up delay-3">
             <div class="glow-effect"></div>
-            <img src="assets/hero_mockup.jpg" alt="ShapCut Editor Interface" class="hero-image">
+            <img src="assets/hero_mockup.jpg" alt="ShapCut Local AI Video Editor Workspace" class="hero-image">
         </div>
     </header>
+
+    <!-- Trust / Stat Metrics Bar -->
+    <section class="trust-bar reveal">
+        <div class="trust-item">
+            <h4>$0 / year</h4>
+            <p>Completely free. No paywalls or watermark traps.</p>
+        </div>
+        <div class="trust-item">
+            <h4>100% On-Device</h4>
+            <p>Your client and raw footage never touches the internet.</p>
+        </div>
+        <div class="trust-item">
+            <h4>0s Cloud Queue</h4>
+            <p>Instant processing powered by your local CPU / GPU.</p>
+        </div>
+        <div class="trust-item">
+            <h4>Unlimited 4K</h4>
+            <p>No monthly minutes limit. Edit hours of video with ease.</p>
+        </div>
+    </section>
 
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="section-header reveal">
-            <h2>Powered by Local AI</h2>
-            <p>Everything runs on your machine. Keep your footage private and avoid expensive API costs.</p>
+            <h2>The Local AI Video Powerhouse</h2>
+            <p>Engineered for content creators, podcasters, streamers, and video editors who demand speed, control, and absolute privacy.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card reveal">
                 <div class="feature-icon">🎙️</div>
-                <h3>Whisper Transcription</h3>
-                <p>Lightning-fast, highly accurate captions powered by faster-whisper. Fixes hallucinations and grammar automatically.</p>
+                <h3>Faster-Whisper Transcription</h3>
+                <p>Industry-grade, highly accurate subtitle transcription running locally via CTranslate2. Generates word-accurate timestamps with self-healing audio extraction.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">⚡</div>
-                <h3>Impact Scoring</h3>
-                <p>Our multi-factor AI analyzes information density, sentiment, pacing, and keywords to find the most engaging clips.</p>
+                <h3>AI Hook & Impact Engine</h3>
+                <p>Multi-factor algorithmic scoring evaluates information density, emotional sentiment shifts, and hook pacing to immediately spotlight the most viral moments.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">✂️</div>
-                <h3>Smart Extraction</h3>
-                <p>Frame-accurate FFmpeg cuts. Export individual viral shorts or merge them into a single highlight reel with burned-in subtitles.</p>
+                <h3>Frame-Accurate Smart Cuts</h3>
+                <p>Lossless FFmpeg stream cutting with optional burned-in kinetic subtitles. Export individual high-energy clips or merge them into a continuous highlight reel.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎯</div>
+                <h3>Automatic 9:16 Re-Framing</h3>
+                <p>Converts horizontal widescreen video into vertical clips tailored for TikTok, Instagram Reels, and YouTube Shorts with intelligent speaker centering.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🛡️</div>
+                <h3>Complete Footage Confidentiality</h3>
+                <p>Never worry about leaking unreleased footage, proprietary tutorials, or private client projects. Everything runs isolated in your local workspace.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🚀</div>
+                <h3>Works Completely Offline</h3>
+                <p>Edit in a café, on an airplane, or off-grid. Once installed, ShapCut operates with zero internet dependency.</p>
             </div>
         </div>
     </section>
 
-    <!-- How it Works -->
+    <!-- Comparison Section: Local vs Cloud -->
+    <section id="comparison" class="comparison-section reveal">
+        <div class="section-header">
+            <h2>Why Creators Are Leaving Cloud Clippers</h2>
+            <p>Cloud tools charge you for every minute of video and own your data. ShapCut gives you full studio independence.</p>
+        </div>
+        <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th class="highlight-col highlight-header">ShapCut (Local AI)</th>
+                        <th>Cloud AI Tools (Opus, Descript)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Price</strong></td>
+                        <td class="highlight-col"><span class="check">✓ $0 (Free Forever)</span></td>
+                        <td><span class="cross">✕ $19 - $49 / month ($240 - $580/yr)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Footage Privacy</strong></td>
+                        <td class="highlight-col"><span class="check">✓ 100% Stays on your machine</span></td>
+                        <td><span class="cross">✕ Uploaded to third-party cloud servers</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Upload Wait Times</strong></td>
+                        <td class="highlight-col"><span class="check">✓ Instant (0 seconds)</span></td>
+                        <td><span class="cross">✕ 10 - 30 minutes for 4K footage</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Processing Limits</strong></td>
+                        <td class="highlight-col"><span class="check">✓ Unlimited hours & exports</span></td>
+                        <td><span class="cross">✕ Capped at 60 - 200 minutes / month</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Watermarks</strong></td>
+                        <td class="highlight-col"><span class="check">✓ Never. Clean exports.</span></td>
+                        <td><span class="cross">✕ Watermarked unless paying top tier</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Offline Mode</strong></td>
+                        <td class="highlight-col"><span class="check">✓ Full offline editing</span></td>
+                        <td><span class="cross">✕ Completely useless without internet</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
     <section id="how-it-works" class="how-it-works">
         <div class="how-it-works-content reveal">
-            <h2>From hours of video to <span class="gradient-text">curated highlights</span>.</h2>
+            <h2>From hours of footage to <span class="gradient-text">viral clips</span> in 3 steps.</h2>
             <ul class="steps-list">
                 <li>
                     <span class="step-number">1</span>
                     <div class="step-text">
-                        <h4>Upload Video</h4>
-                        <p>Drop your MP4, MOV, or MKV directly into the editor.</p>
+                        <h4>Drop In Your Footage</h4>
+                        <p>Drag any MP4, MOV, or MKV file into the editor. ShapCut accepts any resolution up to 4K 60FPS.</p>
                     </div>
                 </li>
                 <li>
                     <span class="step-number">2</span>
                     <div class="step-text">
-                        <h4>AI Analysis</h4>
-                        <p>ShapCut transcribes the audio and scores every sentence for viral potential.</p>
+                        <h4>Instant Local AI Analysis</h4>
+                        <p>Whisper AI generates timestamps and captions while our scoring engine ranks every sentence for engagement.</p>
                     </div>
                 </li>
                 <li>
                     <span class="step-number">3</span>
                     <div class="step-text">
-                        <h4>Curate & Export</h4>
-                        <p>Review the AI's selections on the timeline, adjust cuts, and click export.</p>
+                        <h4>One-Click Export</h4>
+                        <p>Preview suggested clips directly on the interactive timeline, adjust boundaries with surgical precision, and export.</p>
                     </div>
                 </li>
             </ul>
@@ -105,25 +213,106 @@
                         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
                     </div>
                     <pre><code>
-> Transcribing audio (faster-whisper)...
-✓ Transcription complete (4m 12s)
-> Analyzing information density...
-> Scoring pacing and sentiment...
-✓ Found 4 high-impact segments
-> Cutting and rendering video...
-✓ Export complete!
+> Initializing local AI engine (faster-whisper)...
+✓ Hardware acceleration detected
+> Transcribing audio & generating timestamps...
+✓ Transcription completed (100% on-device)
+> Analyzing sentence density & hook velocity...
+✓ Identified 5 high-impact viral segments
+> Executing lossless FFmpeg cuts...
+✓ 5 shorts exported ready for TikTok & Reels!
                     </code></pre>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Call to Action -->
+    <!-- Downloads Section -->
+    <section id="downloads" class="downloads">
+        <div class="section-header reveal">
+            <h2>Download ShapCut v1.0.0</h2>
+            <p>Self-contained installers with embedded AI runtime and LGPL FFmpeg. No technical configuration required.</p>
+        </div>
+        <div class="platform-grid reveal">
+            <!-- Windows Card -->
+            <div id="card-windows" class="platform-card">
+                <div>
+                    <div class="platform-icon">🪟</div>
+                    <h3>Windows</h3>
+                    <p>Windows 10 / 11 (64-bit)</p>
+                </div>
+                <div>
+                    <a id="btn-download-windows" href="https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut.Setup.1.0.0.exe" class="btn-platform">
+                        Download Installer (.exe)
+                    </a>
+                    <div class="platform-meta">Single-file setup wizard with custom directory support</div>
+                </div>
+            </div>
+
+            <!-- macOS Card -->
+            <div id="card-mac" class="platform-card">
+                <div>
+                    <div class="platform-icon">🍎</div>
+                    <h3>macOS</h3>
+                    <p>macOS 12.0+ (Apple Silicon M1/M2/M3 & Intel)</p>
+                </div>
+                <div>
+                    <a id="btn-download-mac" href="https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut-1.0.0.dmg" class="btn-platform">
+                        Download DMG (.dmg)
+                    </a>
+                    <div class="platform-meta">Native package with drag-and-drop Applications install</div>
+                </div>
+            </div>
+
+            <!-- Linux Card -->
+            <div id="card-linux" class="platform-card">
+                <div>
+                    <div class="platform-icon">🐧</div>
+                    <h3>Linux</h3>
+                    <p>Ubuntu, Debian, Fedora, Arch & openSUSE</p>
+                </div>
+                <div>
+                    <a id="btn-download-linux" href="https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut-1.0.0.AppImage" class="btn-platform">
+                        Download AppImage (.AppImage)
+                    </a>
+                    <div class="platform-meta">Portable self-contained bundle, just chmod +x and run</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section reveal">
+        <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about running ShapCut locally.</p>
+        </div>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h4>Is ShapCut really 100% free forever?</h4>
+                <p>Yes. ShapCut is fully open-source software distributed under MIT and LGPL licenses. There are no subscriptions, no monthly credits, no paywalled features, and no watermark on exported videos.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Does my video footage ever leave my computer?</h4>
+                <p>Never. Unlike SaaS video clippers that upload your files to remote third-party cloud servers, ShapCut runs the Whisper AI neural network and FFmpeg media processor 100% locally on your own machine.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Do I need an expensive graphics card?</h4>
+                <p>No. ShapCut uses optimized CTranslate2 INT8 quantization, allowing fast transcription on standard multi-core CPUs. If an NVIDIA GPU or Apple Silicon Neural Engine is present, ShapCut automatically utilizes it for lightning-speed rendering.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What video formats are supported?</h4>
+                <p>ShapCut supports any video format handled by FFmpeg, including MP4, MOV, MKV, AVI, WEBM, and M4V at resolutions from 720p up to 4K 60FPS.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Call To Action -->
     <section class="cta reveal">
         <div class="cta-content">
-            <h2>Ready to speed up your workflow?</h2>
-            <p>Download ShapCut today. It's completely free and open-source.</p>
-            <a href="https://github.com/ransamie/ShapCut/releases" class="btn-primary">Get ShapCut Free</a>
+            <h2>Reclaim your editing hours today.</h2>
+            <p>Join creators producing daily viral shorts without cloud subscriptions or privacy compromises.</p>
+            <a href="#downloads" class="btn-primary">Get ShapCut v1.0.0 Free</a>
         </div>
     </section>
 
@@ -135,12 +324,13 @@
                 <span>ShapCut</span>
             </div>
             <div class="footer-links">
-                <a href="https://github.com/ransamie/ShapCut">GitHub Repository</a>
-                <a href="https://github.com/ransamie/ShapCut/issues">Report an Issue</a>
+                <a href="https://github.com/ransamie/ShapCut" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/ransamie/ShapCut/releases" target="_blank">Release Notes</a>
+                <a href="https://github.com/ransamie/ShapCut/issues" target="_blank">Report an Issue</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 ShapCut Contributors. MIT Licensed.</p>
+            <p>&copy; 2026 ShapCut Contributors. 100% Free and Open Source.</p>
         </div>
     </footer>
 

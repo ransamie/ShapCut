@@ -8,6 +8,7 @@
     "url": "https://github.com/ransamie/ShapCut.git"
   },
   "author": "ShapCut",
+  "description": "Free, local AI video editor that turns long videos into viral shorts automatically.",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -29,7 +30,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^10.0.4",
     "electron": "^31.0.0",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^26.15.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
@@ -57,7 +58,12 @@
       }
     ],
     "mac": {
-      "icon": "public/logo.png"
+      "icon": "public/logo.png",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "identity": null
     },
     "win": {
       "icon": "public/icon.ico",
@@ -75,7 +81,8 @@
       "icon": "public/logo.png",
       "target": [
         "AppImage"
-      ]
+      ],
+      "category": "Video"
     }
   }
 }
