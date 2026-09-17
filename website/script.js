@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     let detectedOS = 'windows'; // default fallback
     let osName = 'Windows';
-    let downloadHref = 'https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut.Setup.1.0.0.exe';
+    let downloadHref = 'https://github.com/ransamie/ShapCut/releases/latest/download/ShapCut-Setup-1.0.0.exe';
     let fileExt = '.exe';
 
     if (userAgent.indexOf('mac') !== -1) {
