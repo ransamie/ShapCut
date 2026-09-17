@@ -67,6 +67,8 @@
       "signExecutable": false
     },
     "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
       "include": "build/installer.nsh"
     },
     "linux": {
