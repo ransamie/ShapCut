@@ -238,10 +238,10 @@ def transcribe_video(
             model = _MODEL_CACHE[model_size]
         else:
             try:
-                import torch
-                device = "cuda" if torch.cuda.is_available() else "cpu"
+                import ctranslate2
+                device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
                 compute_type = "float16" if device == "cuda" else "int8"
-            except ImportError:
+            except Exception:
                 device = "cpu"
                 compute_type = "int8"
                 

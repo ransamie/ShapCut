@@ -42,6 +42,8 @@
     "directories": {
       "output": "dist_electron"
     },
+    "npmRebuild": false,
+    "disableAsarIntegrity": true,
     "files": [
       "dist/**/*",
       "electron/**/*",
@@ -58,11 +60,14 @@
       "icon": "public/logo.png"
     },
     "win": {
-      "icon": "public/logo.png",
+      "icon": "public/icon.ico",
       "target": [
         "nsis"
       ],
       "signExecutable": false
+    },
+    "nsis": {
+      "include": "build/installer.nsh"
     },
     "linux": {
       "icon": "public/logo.png",

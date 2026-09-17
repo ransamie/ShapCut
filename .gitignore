@@ -11,6 +11,9 @@ backend/exports/
 *.egg-info/
 dist/
 build/
+frontend/build/backend/
+!frontend/build/
+!frontend/build/installer.nsh
 .eggs/
 
 # Node
