@@ -99,8 +99,11 @@ jobs:
         working-directory: ./frontend
         shell: bash
         run: |
-          cp $(which ffmpeg) build/backend/
-          cp $(which ffprobe) build/backend/
+          if ! command -v ffmpeg &> /dev/null; then
+            brew install ffmpeg
+          fi
+          cp "$(which ffmpeg)" build/backend/ffmpeg
+          cp "$(which ffprobe)" build/backend/ffprobe
           chmod +x build/backend/ffmpeg build/backend/ffprobe
           chmod +x build/backend/shapcut_api
 
