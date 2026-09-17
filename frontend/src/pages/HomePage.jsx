@@ -60,9 +60,15 @@ export default function HomePage() {
       {/* Navbar */}
       <nav className="home-nav">
         <div className="home-logo">
-          <Scissors size={20} />
+          <img src="/logo.png" alt="ShapCut" className="home-logo-img" />
           <span>ShapCut</span>
         </div>
+        <button 
+          className="btn btn-ghost btn-sm" 
+          onClick={() => window.dispatchEvent(new Event('trigger-app-tour'))}
+        >
+          App Tour
+        </button>
       </nav>
 
       {/* Hero */}

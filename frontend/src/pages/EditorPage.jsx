@@ -15,7 +15,7 @@ import { useRef, useEffect, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, Scissors, Wand2, CheckCheck,
-  FileUp, BarChart3, Plus, Sliders, RefreshCw, AlertCircle, Download
+  FileUp, BarChart3, Plus, Sliders, RefreshCw, AlertCircle, Download, Film
 } from 'lucide-react'
 import useEditorStore from '../store/editorStore'
 import { useShallow } from 'zustand/react/shallow'
@@ -440,7 +440,7 @@ export default function EditorPage() {
             <ArrowLeft size={14} /> Home
           </button>
           <div className="topbar-logo">
-            <Scissors size={16} />
+            <img src="/logo.png" alt="ShapCut" className="topbar-logo-img" />
             <span>ShapCut</span>
           </div>
           {filename && <span className="topbar-filename">{filename}</span>}
@@ -448,45 +448,53 @@ export default function EditorPage() {
 
         {/* Pipeline step indicators */}
         {hasJob && (
-          <>
-            <div className="pipeline-steps">
-              {statusSteps.map((s, i) => (
-                <div key={s.key} className={`pipeline-step ${s.done ? 'done' : ''}`}>
-                  <span className="ps-dot" />
-                  <span className="ps-label">{s.label}</span>
-                  {i < statusSteps.length - 1 && <span className="ps-sep">→</span>}
-                </div>
-              ))}
-            </div>
-
-            {hasSegments && (
-              <div className="topbar-right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button
-                  className="btn btn-ghost btn-sm"
-                  onClick={runAll}
-                  disabled={status === 'transcribing'}
-                  title="Re-run the entire pipeline from scratch"
-                >
-                  <RefreshCw size={13} /> Re-run All
-                </button>
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={runCorrection}
-                  disabled={status === 'correcting'}
-                >
-                  <CheckCheck size={14} /> AI Correct
-                </button>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => runAnalysis()}
-                  disabled={status === 'analyzing'}
-                >
-                  <Scissors size={14} /> Analyze Shorts
-                </button>
+          <div className="pipeline-steps">
+            {statusSteps.map((s, i) => (
+              <div key={s.key} className={`pipeline-step ${s.done ? 'done' : ''}`}>
+                <span className="ps-dot" />
+                <span className="ps-label">{s.label}</span>
+                {i < statusSteps.length - 1 && <span className="ps-sep">→</span>}
               </div>
-            )}
-          </>
+            ))}
+          </div>
         )}
+
+        <div className="topbar-right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button 
+            className="btn btn-ghost btn-sm" 
+            onClick={() => window.dispatchEvent(new Event('trigger-app-tour'))}
+            title="App Tour"
+          >
+            App Tour
+          </button>
+          
+          {hasJob && hasSegments && (
+            <>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={runAll}
+                disabled={status === 'transcribing'}
+                title="Re-run the entire pipeline from scratch"
+              >
+                <RefreshCw size={13} /> Re-run All
+              </button>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={runCorrection}
+                disabled={status === 'correcting'}
+              >
+                <CheckCheck size={14} /> AI Correct
+              </button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => runAnalysis()}
+                disabled={status === 'analyzing'}
+              >
+                <Scissors size={14} /> Analyze Shorts
+              </button>
+            </>
+          )}
+        </div>
 
       </header>
 
@@ -496,7 +504,7 @@ export default function EditorPage() {
           /* Upload state */
           <div className="upload-state">
             <div className="upload-header">
-              <Scissors size={32} className="upload-logo-icon" />
+              <img src="/logo.png" alt="ShapCut" className="upload-logo-icon" />
               <h2>ShapCut Editor</h2>
               <p>Open a long-form video to get started. ShapCut will extract captions, find the best moments, and create your short clips.</p>
             </div>
@@ -519,7 +527,7 @@ export default function EditorPage() {
                     />
                   ) : (
                     <div className="video-placeholder">
-                      <Scissors size={40} />
+                      <Film size={40} />
                       <p>Video preview</p>
                     </div>
                   )}
@@ -534,7 +542,7 @@ export default function EditorPage() {
                     </div>
                     <div className="config-row-right">
                       <div className="config-display">
-                        <Scissors size={12}/> <span>{filename}</span>
+                        <Film size={12}/> <span>{filename}</span>
                       </div>
                     </div>
                   </div>

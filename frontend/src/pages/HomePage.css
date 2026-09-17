@@ -31,6 +31,12 @@
   letter-spacing: -0.02em;
 }
 .home-logo svg { color: var(--color-accent); }
+.home-logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  object-fit: contain;
+}
 
 /* Hero */
 .hero {
